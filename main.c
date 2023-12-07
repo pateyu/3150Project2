@@ -59,6 +59,26 @@ void WrongMark(void) {
 	
 }
 
+void correctMark(void) {
+	// Function to light up check mark
+	uint8_t temp_PINE = PINE;
+	uint8_t temp_PIND = PIND;
+	DDRD |= (1 << PD3) | (1 << PD2) | (1 << PD5);
+	DDRE |= (1 << PE5);
+	
+	PORTD &= ~((1 << PD3) | (1 << PD5) | (1 << PD2));
+	PORTE &= ~(1<<PE5); //correct to middle mark
+	
+	delay_ms(10000);
+	
+	PORTD |= ((1 << PD3) | (1 << PD5) | (1 << PD2));
+	PORTE |= (1<<PE5); //correct to middle mark
+	
+	DDRE = temp_PINE;
+	DDRD = temp_PIND;
+}
+	
+//Game-level 1 - Yug
 bool handlePA3Press(void) {
 	// Function to handle PA3 press - lights sequence and button press sequence
 	uint8_t sequenceState = 0;
@@ -118,6 +138,254 @@ bool handlePA3Press(void) {
 	return false;
 }
 
+//Game-level-2-Parineeta
+bool handlePA6Press(void)
+{
+	// Function to handle PA6 press - lights sequence and button press sequence
+	uint8_t sequenceState = 0;
+	
+	PORTD &= ~(1 << PD0); // Light up PD0
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD0); // Turn off PD0
+
+	PORTD &= ~(1 << PD1); // Light up PD1
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD1); // Turn off PD1
+
+	PORTD &= ~(1 << PD2); // Light up PD2
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD2); // Turn off PD2
+
+	PORTD &= ~(1 << PD4); // Light up PD5
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD4); // Turn off PD5
+
+	PORTD &= ~(1 << PD7); // Light up PD8
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD7); // Turn off PD8
+
+	PORTD &= ~(1 << PD6); // Light up PD7
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD6); // Turn off PD7
+
+	PORTD &= ~(1 << PD5); // Light up PD6
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD5); // Turn off PD6
+
+	PORTD &= ~(1 << PD3); // Light up PD3
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD3); // Turn off PD3
+
+	// Wait for the sequence: PA0, PA1, PA2, PA5, PA8, PA7, PA6, PA3
+	while(sequenceState < 8)
+	{
+		if(sequenceState == 0 && !(PINA & (1 << PA0)))
+		{
+			sequenceState++;
+		}
+		
+		else if(sequenceState == 0 && !(PINA & (1 << PA1)) | !(PINA & (1 << PA2)) | !(PINA & (1 << PA5)) | !(PINA & (1 << PA7)) | !(PINA & (1 << PA6)) | !(PINA & (1 << PA3))){
+			return false;
+		}
+				
+		else if(sequenceState == 1 && !(PINA & (1 << PA1)))
+		{
+			sequenceState++;
+		}
+
+		else if(sequenceState == 2 && !(PINA & (1 << PA2)))
+		{
+			sequenceState++;
+		}
+
+		else if(sequenceState == 3 && !(PINA & (1 << PA4)))
+		{
+			sequenceState++;
+		}
+
+		else if(sequenceState == 4 && !(PINA & (1 << PA7)))
+		{
+			sequenceState++;
+		}
+
+		else if(sequenceState == 5 && !(PINA & (1 << PA6)))
+		{
+			sequenceState = 6;
+		}
+
+		else if(sequenceState == 6 && !(PINA & (1 << PA5)))
+		{
+			sequenceState++;
+		}
+
+		else if(sequenceState == 7 && !(PINA & (1 << PA3)))
+		{
+			sequenceState++;
+			return true;
+		}
+		
+
+	// Light up all LEDs after correct sequence
+	//PORTD &= ~((1 << PD0) | (1 << PD1) | (1 << PD2) | (1 << PD5) | (1 << PD8) | (1 << PD7) | (1 << PD6) | (1 << PD3));
+	}
+	return false;
+}
+
+bool handlePA7Press(void)
+{
+	// Function to handle PA7 press - lights sequence and button press sequence
+	uint8_t sequenceState = 0;
+
+	PORTD &= ~(1 << PD1); // Light up PD1
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD1); // Turn off PD1
+
+	PORTD &= ~(1 << PD7); // Light up PD8
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD7); // Turn off PD8
+
+	PORTD &= ~(1 << PD6); // Light up PD7
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD6); // Turn off PD7
+
+	PORTD &= ~(1 << PD5); // Light up PD6
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD5); // Turn off PD6
+
+	PORTD &= ~(1 << PD1); // Light up PD1
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD1); // Turn off PD1
+
+	// Wait for the sequence: PA1, PA8, PA7, PA6, PA1
+	while(sequenceState < 5)
+	{
+		if(sequenceState == 0 && !(PINA & (1 << PA1)))
+		{
+			sequenceState = 1;
+			while(!(PINA & (1 << PA1)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+		else if(sequenceState == 0 && !(PINA & (1 << PA2)) | !(PINA & (1 << PA7)) | !(PINA & (1 << PA6)) | !(PINA & (1 << PA5)))
+		{
+			return false;
+		}
+		else if(sequenceState == 1 && !(PINA & (1 << PA7)))
+		{
+			sequenceState = 2;
+			while(!(PINA & (1 << PA7)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+
+		else if(sequenceState == 2 && !(PINA & (1 << PA6)))
+		{
+			sequenceState = 3;
+			while(!(PINA & (1 << PA6)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+
+		else if(sequenceState == 3 && !(PINA & (1 << PA5)))
+		{
+			sequenceState = 4;
+			while(!(PINA & (1 << PA5)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+
+		else if(sequenceState == 4 && !(PINA & (1 << PA1)))
+		{
+			sequenceState = 5;
+			return true;
+			while(!(PINA & (1 << PA1)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+	}
+
+	// Light up all LEDs after correct sequence
+	//PORTD &= ~((1 << PD1) | (1 << PD8) | (1 << PD7) | (1 << PD6) | (1 << PD1));
+	return true;
+}
+
+bool handlePA5Press(void)
+{
+	// Function to handle PA8 press - lights sequence and button press sequence
+	uint8_t sequenceState = 0;
+
+	PORTD &= ~(1 << PD6); // Light up PD7
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD6); // Turn off PD7
+
+	PORTD &= ~(1 << PD4); // Light up PD5
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD4); // Turn off PD5
+
+	PORTD &= ~(1 << PD1); // Light up PD1
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD1); // Turn off PD1
+
+	PORTD &= ~(1 << PD3); // Light up PD3
+	delay_ms(LIGHT_UP_DELAY);
+	PORTD |= (1 << PD3); // Turn off PD3
+
+	// Wait for the sequence: PA7, PA5, PA1, PA3
+	while(sequenceState != 4)
+	{
+		if(sequenceState == 0 && !(PINA & (1 << PA6)))
+		{
+			sequenceState = 1;
+			while(!(PINA & (1 << PA6)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+		
+		else if(sequenceState == 0 && !(PINA & (1 << PA4)) | !(PINA & (1 << PA1)) | !(PINA & (1 << PA3)))
+		{
+			return false;
+		}
+		
+		else if(sequenceState == 1 && !(PINA & (1 << PA4)))
+		{
+			sequenceState = 2;
+			while(!(PINA & (1 << PA4)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+
+		else if(sequenceState == 2 && !(PINA & (1 << PA1)))
+		{
+			sequenceState = 3;
+			while(!(PINA & (1 << PA1)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+
+		else if(sequenceState == 3 && !(PINA & (1 << PA3)))
+		{
+			sequenceState = 4;
+			return true;
+			while(!(PINA & (1 << PA3)))
+			{
+				delay_ms(DELAY_MS);
+			}
+		}
+	}
+
+	// Light up all LEDs after correct sequence
+	//PORTD &= ~((1 << PD7) | (1 << PD5) | (1 << PD1) | (1 << PD1));
+	return false;
+}
+
 int main(void) {
 	DDRD = 0b00011111; // Set PD0 to PD4 as output for counter
 	DDRE |= (1 << BUZZER_PIN); // Set PE4 as output for the buzzer
@@ -125,8 +393,8 @@ int main(void) {
 
 	PORTD = 0xFF;
 
-	DDRA &= ~((1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3)); // Configure PA0, PA1, PA2, and PA3 as input
-	PORTA |= (1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3); // Enable pull-up resistors
+	DDRA &= ~((1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3)) | (1 << PA4) | (1 << PA5) | (1 << PA6) | (1 << PA7); // Configure PA0, PA1, PA2, and PA3 as input
+	PORTA |= (1 << PA0) | (1 << PA1) | (1 << PA2) | (1 << PA3)| (1 << PA4) | (1 << PA5) | (1 << PA6) | (1 << PA7); // Enable pull-up resistors
 
 	uint8_t counter = 0;
 	
@@ -177,7 +445,9 @@ int main(void) {
 		if (!(PINA & (1 << PA3))) {
 			bool passed = handlePA3Press(); // Call the function to handle PA3 press
 			if (passed){
+				correctMark();
 				activateBuzzerMultipleTimes();
+				
 				/*
 				PORTD &= ~((1 << PD0) | (1 << PD1) | (1 << PD2));
 				delay_ms(LIGHT_UP_DELAY);
@@ -188,24 +458,55 @@ int main(void) {
 				delay_ms(LIGHT_UP_DELAY);
 				PORTD |= ((1 << PD0) | (1 << PD1) | (1 << PD2));
 				*/
-				//marcella's code (tick mark)
-				//Parineeta's level
-				//marcella's code (tick mark)
-				//Shrija's level
 			}
 			else{
 				//marcella's code (cross mark)
 				WrongMark();
 				activateBuzzerMultipleTimes();
-				continue;
+				//continue;
 			}
 		}
+		
+		else if (!(PINA & (1 << PA6)))
+		{
+			bool passed_2 = handlePA6Press();
+			if (passed_2){
+				correctMark();
+				activateBuzzerMultipleTimes();
+			}
+			else{
+				WrongMark();
+				activateBuzzerMultipleTimes();
+			}
+		}
+		
+		else if (!(PINA & (1 << PA7)))
+		{
+			bool passed_3 = handlePA7Press();
+			if (passed_3){
+				correctMark();
+				activateBuzzerMultipleTimes();
+			}
+			else{
+				WrongMark();
+				activateBuzzerMultipleTimes();
+			}
+				
+		}
+		
+		else if (!(PINA & (1 << PA5)))
+		{
+			bool passed_4 = handlePA5Press();
+			if (passed_4){
+				correctMark();
+				activateBuzzerMultipleTimes();
+			}
+			else{
+				WrongMark();
+				activateBuzzerMultipleTimes();
+			}
 			
-			/*
-			
-		}*/
+		}
 	}
-
 	return 0;
 }
-
